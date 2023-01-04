@@ -39,12 +39,14 @@ int main(void) {
     printf(".rela.plt@0x%p\n.dynsym@%p\n.dynstr@%p\n", head + shdr->sh_offset, head + dynsym->sh_offset, head + dynstr->sh_offset); 
 
     // write@pltに飛んだ時に参照されるELF64_Rela構造体を読んでみる。あれ？なんかr_offsetに既視感が..?
+    puts("[ELF64_Rela]");
     rela = (Elf64_Rela*)(head + rela_plt->sh_offset);
-    printf("\tr_offset: 0x%08lx\n\tr_info: 0x%08lx\n\tr_info(SYM): 0x%08lx\n\tr_info(TYPE): 0x%08lx\n\tr_addend: 0x%08lx\n", rela->r_offset, rela->r_info, ELF64_R_SYM(rela->r_info),ELF64_R_TYPE(rela->r_info), rela->r_addend);
+    printf("\tr_offset: 0x%016lx\n\tr_info: 0x%016lx\n\tr_info(SYM): 0x%08lx\n\tr_info(TYPE): 0x%08lx\n\tr_addend: 0x%016lx\n", rela->r_offset, rela->r_info, ELF64_R_SYM(rela->r_info),ELF64_R_TYPE(rela->r_info), rela->r_addend);
 
     // このELF64_Rela構造体から参照されているシンボルテーブルエントリを見てみる
+    puts("[ELF64_Sym]");
     sym = (Elf64_Sym*)(head + dynsym->sh_offset + dynsym->sh_entsize * ELF64_R_SYM(rela->r_info));
-    printf("\t%s\n", head + dynstr->sh_offset + sym -> st_name);
+    printf("\tst_name: 0x%08x(%s)\n\tst_info: 0x%02x\n", sym->st_name, head + dynstr->sh_offset + sym -> st_name, sym->st_info);
 
     munmap(head, sb.st_size);
     close(fd);
