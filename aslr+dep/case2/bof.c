@@ -1,12 +1,12 @@
-/* gcc -fno-stack-protector -no-pie -Wl,-z,norelro bof.c */
+/* gcc -fno-stack-protector -no-pie bof.c */
 /* bof.c */
 #include <unistd.h>
 
 int main(void) {
     char buf[100];
     int size;
-    /* pop rdi; ret; pop rsi; ret; pop rdx; ret; */
-    char cheat[] = "\x5f\xc3\x5e\xc3\x5a\xc3";
+    // pop rdi; ret; pop rsi; ret; pop rdx; ret;
+    //char cheat[] = "\x5f\xc3\x5e\xc3\x5a\xc3";
     read(0, &size, 8);
     read(0, buf, size);
     write(1, buf, size);
